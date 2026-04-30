@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Data Mahasiswa - LocalStorage</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        form { background: #fff; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input, textarea, select { width: 100%; padding: 8px; margin: 5px 0 15px; box-sizing: border-box; }
+        .radio-group { margin-bottom: 15px; }
+        .radio-group input { width: auto; }
+        
+        button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .submit { background: #28a745; color: white; }
+        .reset { background: #ffc107; color: white; }
+        
+        /* Style Tombol Karakter */
+        .btn-aksi { padding: 5px 10px; margin: 2px; font-size: 18px; border-radius: 3px; }
+        .btn-edit { background: #007bff; color: white; }
+        .btn-delete { background: #dc3545; color: white; }
+
+        table { width: 100%; border-collapse: collapse; background: #fff; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background: #eee; }
+    </style>
+</head>
+<body>
+
+<h2>Form Data Mahasiswa</h2>
+
+<form id="formMahasiswa">
+    <label>NIM</label>
+    <input type="text" id="nim" required>
+
+    <label>Nama</label>
+    <input type="text" id="nama" required>
+
+    <label>Alamat</label>
+    <input id="alamat"></input>
+
+    <label>Jenis Kelamin</label>
+    <div class="radio-group">
+        <input type="radio" name="jk" value="Pria"> Pria
+        <input type="radio" name="jk" value="Wanita"> Wanita
+        <input type="radio" name="jk" value="Lainnya"> Lainnya
+    </div>
+
+    <label>Tanggal Lahir</label>
+    <div style="display: flex; gap: 10px;">
+        <select id="tanggal"></select>
+        <select id="bulan">
+            <option value="01">Januari</option><option value="02">Februari</option>
+            <option value="03">Maret</option><option value="04">April</option>
+            <option value="05">Mei</option><option value="06">Juni</option>
+            <option value="07">Juli</option><option value="08">Agustus</option>
+            <option value="09">September</option><option value="10">Oktober</option>
+            <option value="11">November</option><option value="12">Desember</option>
+        </select>
+        <select id="tahun"></select>
+    </div>
+
+    <label>Password</label>
+    <input type="password" id="password">
+
+    <button type="submit" class="submit">Simpan Data</button>
+    <button type="reset" class="reset" onclick="clearForm()">Reset</button>
+</form>
+
+<h2>Data Mahasiswa</h2>
+
+<div style="margin-bottom: 10px;">
+    <input type="text" id="searchInput" placeholder="Cari Nama atau NIM..." 
+           style="width: 80%; padding: 8px;" onkeyup="searchTable()">
+    <button type="button" style="width: 18%; background: #2196F3; color: white;" onclick="searchTable()">Cari</button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>NIM</th>
+            <th>Nama</th>
+            <th>Alamat</th>
+            <th>JK</th>
+            <th>TTL</th>
+            <th>Password</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+    const form = document.getElementById("formMahasiswa");
+    const tableBody = document.getElementById("tableBody");
+
+    // 1. Inisialisasi Dropdown
+    for (let i = 1; i <= 31; i++) {
+        let val = i < 10 ? '0' + i : i;
+        document.getElementById("tanggal").innerHTML += `<option value="${val}">${val}</option>`;
+    }
+    for (let i = 1990; i <= 2026; i++) {
+        document.getElementById("tahun").innerHTML += `<option value="${i}">${i}</option>`;
+    }
+
+    // 2. Load data dari LocalStorage saat halaman dibuka
+    document.addEventListener("DOMContentLoaded", displayData);
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const dataMahasiswa = {
+            nim: document.getElementById("nim").value,
+            nama: document.getElementById("nama").value,
+            alamat: document.getElementById("alamat").value,
+            jk: document.querySelector('input[name="jk"]:checked')?.value || "-",
+            ttl: `${document.getElementById("tanggal").value}-${document.getElementById("bulan").value}-${document.getElementById("tahun").value}`,
+            password: document.getElementById("password").value
+        };
+
+        saveToLocalStorage(dataMahasiswa);
+        form.reset();
+        displayData();
+    });
+
+    function saveToLocalStorage(obj) {
+        let list = JSON.parse(localStorage.getItem("mhsList")) || [];
+        // Cek apakah NIM sudah ada (untuk update/edit)
+        const index = list.findIndex(item => item.nim === obj.nim);
+        if(index !== -1) {
+            list[index] = obj; // Update jika NIM sama
+        } else {
+            list.push(obj); // Tambah baru
+        }
+        localStorage.setItem("mhsList", JSON.stringify(list));
+    }
+
+    function displayData() {
+        tableBody.innerHTML = "";
+        let list = JSON.parse(localStorage.getItem("mhsList")) || [];
+
+        list.forEach((mhs) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${mhs.nim}</td>
+                <td>${mhs.nama}</td>
+                <td>${mhs.alamat}</td>
+                <td>${mhs.jk}</td>
+                <td>${mhs.ttl}</td>
+                <td>${mhs.password}</td>
+                <td>
+                    <button class="btn-aksi btn-edit" onclick="editData('${mhs.nim}')">✎</button>
+                    <button class="btn-aksi btn-delete" onclick="deleteData('${mhs.nim}')">🗑</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function deleteData(nim) {
+        if (confirm("Hapus mahasiswa dengan NIM: " + nim + "?")) {
+            let list = JSON.parse(localStorage.getItem("mhsList")) || [];
+            list = list.filter(item => item.nim !== nim);
+            localStorage.setItem("mhsList", JSON.stringify(list));
+            displayData();
+        }
+    }
+
+    function editData(nim) {
+        let list = JSON.parse(localStorage.getItem("mhsList")) || [];
+        const mhs = list.find(item => item.nim === nim);
+
+        if (mhs) {
+            document.getElementById("nim").value = mhs.nim;
+            document.getElementById("nama").value = mhs.nama;
+            document.getElementById("alamat").value = mhs.alamat;
+            
+            if (mhs.jk !== "-") {
+                document.querySelector(`input[name="jk"][value="${mhs.jk}"]`).checked = true;
+            }
+
+            const ttl = mhs.ttl.split("-");
+            document.getElementById("tanggal").value = ttl[0];
+            document.getElementById("bulan").value = ttl[1];
+            document.getElementById("tahun").value = ttl[2];
+            document.getElementById("password").value = mhs.password;
+            
+            window.scrollTo(0,0);
+        }
+    }
+
+    function clearForm() {
+        form.reset();
+    }
+    function searchTable() {
+    // Ambil input dan filter
+    let input = document.getElementById("searchInput");
+    let filter = input.value.toLowerCase();
+    let table = document.querySelector("table");
+    let tr = table.getElementsByTagName("tr");
+
+    // Loop semua baris tabel (kecuali header)
+    for (let i = 1; i < tr.length; i++) {
+        let tdNIM = tr[i].getElementsByTagName("td")[0]; // Kolom NIM
+        let tdNama = tr[i].getElementsByTagName("td")[1]; // Kolom Nama
+        
+        if (tdNIM || tdNama) {
+            let txtNIM = tdNIM.textContent || tdNIM.innerText;
+            let txtNama = tdNama.textContent || tdNama.innerText;
+            
+            // Cek apakah ada yang cocok dengan filter
+            if (txtNIM.toLowerCase().indexOf(filter) > -1 || txtNama.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+
+</body>
+</html>

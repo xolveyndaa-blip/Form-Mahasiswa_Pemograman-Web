@@ -213,10 +213,12 @@ Perubahan Baru:
 Example
 
 
-## Before
+# Perbandingan Tampilan
+
+## Sebelum Perbaikan
 
 ![Before](https://raw.githubusercontent.com/xolveyndaa-blip/Form-Mahasiswa_Pemograman-Web/main/images/before.png)
 
-## After
+## Setelah Perbaikan
 
-![After](https://raw.githubusercontent.com/xolveyndaa-blip/Form-Mahasiswa_Pemograman-Web/main/images/Screenshot 2026-05-10 115945.png)
+![After](https://raw.githubusercontent.com/xolveyndaa-blip/Form-Mahasiswa_Pemograman-Web/main/images/Screenshot%202026-05-10%20115945.png)

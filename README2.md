@@ -213,10 +213,10 @@ Perubahan Baru:
 Example
 
 
-Before
+## Before
 
-![Before](../before.png)
+![Before](https://raw.githubusercontent.com/xolveyndaa-blip/Form-Mahasiswa_Pemograman-Web/main/images/before.png)
 
+## After
 
-After
-![After](../after.png)
+![After](https://raw.githubusercontent.com/xolveyndaa-blip/Form-Mahasiswa_Pemograman-Web/main/images/after.png)

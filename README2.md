@@ -207,5 +207,8 @@ Perubahan Baru:
 •	Password jadi bintang
 •	Dropdown tanggal otomatis
 Example
+Before
 ![Before](./before.png)
+
+After
 ![After](./after.png)

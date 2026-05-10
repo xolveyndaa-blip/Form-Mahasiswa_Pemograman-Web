@@ -207,9 +207,5 @@ Perubahan Baru:
 •	Password jadi bintang
 •	Dropdown tanggal otomatis
 Example
-<h2>Sebelum</h2>
-<img src="before.png" width="700">
-
-<h2>Sesudah</h2>
-<img src="after.png" width="700">
-
+![Before](./before.png)
+![After](./after.png)
